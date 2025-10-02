@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  hashedPassword String
+  name           String
+  university     String?
+  phone          String?
+  bio            String?
+  profilePicture String?
+  warningCount   Int       @default(0)
+  isBanned       Boolean   @default(false)
+  banReason      String?
+  bannedAt       DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  items          Item[]
+  sessions       Session[]
+  favorites      Favorite[]
+  messages       Message[] @relation("UserMessages")
+  conversationsA Conversation[] @relation("BuyerConversations")
+  conversationsB Conversation[] @relation("SellerConversations")
+  activities     UserActivity[]
+  reports        Report[]   @relation("Reporter")
+}
+
+model Session {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+}
+
+model Item {
+  id                 Int       @id @default(autoincrement())
+  title              String
+  description        String
+  category           String
+  price              Decimal   @db.Decimal(10,2)
+  discountPercentage Int?      @default(0)
+  condition          String
+  location           String
+  isAvailable        Boolean   @default(true)
+  isDeleted          Boolean   @default(false)
+  seller             User      @relation(fields: [sellerId], references: [id])
+  sellerId           Int
+  images             ItemImage[]
+  viewCount          Int       @default(0)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+model ItemImage {
+  id        Int     @id @default(autoincrement())
+  item      Item    @relation(fields: [itemId], references: [id])
+  itemId    Int
+  url       String
+  thumbUrl  String
+  order     Int     @default(0)
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  item      Item     @relation(fields: [itemId], references: [id])
+  itemId    Int
+  createdAt DateTime @default(now())
+
+  @@unique([userId, itemId])
+}
+
+model Conversation {
+  id        Int      @id @default(autoincrement())
+  item      Item     @relation(fields: [itemId], references: [id])
+  itemId    Int
+  buyer     User     @relation("BuyerConversations", fields: [buyerId], references: [id])
+  buyerId   Int
+  seller    User     @relation("SellerConversations", fields: [sellerId], references: [id])
+  sellerId  Int
+  messages  Message[]
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@unique([itemId, buyerId, sellerId])
+}
+
+model Message {
+  id            Int      @id @default(autoincrement())
+  conversation  Conversation @relation(fields: [conversationId], references: [id])
+  conversationId Int
+  sender        User     @relation("UserMessages", fields: [senderId], references: [id])
+  senderId      Int
+  content       String
+  isRead        Boolean  @default(false)
+  createdAt     DateTime @default(now())
+}
+
+model Report {
+  id             Int      @id @default(autoincrement())
+  reporter       User     @relation("Reporter", fields: [reporterId], references: [id])
+  reporterId     Int
+  reportType     String
+  reportedItem   Item?    @relation(fields: [reportedItemId], references: [id])
+  reportedItemId Int?
+  reportedUser   User?    @relation(fields: [reportedUserId], references: [id])
+  reportedUserId Int?
+  description    String
+  evidenceUrls   String[]
+  status         String   @default("pending")
+  createdAt      DateTime @default(now())
+  resolvedAt     DateTime?
+  adminNotes     String?
+}
+
+model UserActivity {
+  id           Int      @id @default(autoincrement())
+  user         User     @relation(fields: [userId], references: [id])
+  userId       Int
+  type         String
+  item         Item?    @relation(fields: [itemId], references: [id])
+  itemId       Int?
+  itemPrice    Decimal? @db.Decimal(10,2)
+  category     String?
+  condition    String?
+  query        String?
+  createdAt    DateTime @default(now())
+}
+
+model ItemShare {
+  id        Int      @id @default(autoincrement())
+  item      Item     @relation(fields: [itemId], references: [id])
+  itemId    Int
+  platform  String
+  sharedAt  DateTime @default(now())
+}

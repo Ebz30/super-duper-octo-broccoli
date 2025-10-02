@@ -1,0 +1,1 @@
+This is the Next.js app for MyBazaar. Run with `npm run dev` from the monorepo root.

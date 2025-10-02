@@ -1,0 +1,25 @@
+# Node
+node_modules/
+*.log
+npm-debug.log*
+
+# Builds
+/dist/
+/.turbo/
+/.next/
+/out/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Uploads
+/uploads/
+
+# Prisma
+/apps/server/prisma/dev.db
+
+# Editor
+.vscode/
+.DS_Store

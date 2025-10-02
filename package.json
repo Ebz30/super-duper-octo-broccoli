@@ -1,0 +1,18 @@
+{
+  "name": "mybazaar-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/server",
+    "apps/web",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run -w server build && npm run -w web build",
+    "dev": "npm run -w server dev & npm run -w web dev",
+    "start": "npm run -w server start & npm run -w web start",
+    "lint": "npm -w web run lint"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
