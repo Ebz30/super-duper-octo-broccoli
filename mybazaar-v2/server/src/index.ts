@@ -12,6 +12,8 @@ dotenv.config();
 
 // Import routes
 import authRoutes from './routes/auth';
+import itemsRoutes from './routes/items';
+import categoriesRoutes from './routes/categories';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -58,6 +60,8 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/items', itemsRoutes);
+app.use('/api/categories', categoriesRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
