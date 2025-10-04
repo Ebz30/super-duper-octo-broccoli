@@ -11,6 +11,10 @@ import ProtectedRoute from '@/components/protected-route';
 import Home from '@/pages/home';
 import Login from '@/pages/login';
 import Register from '@/pages/register';
+import Browse from '@/pages/browse';
+import CreateListing from '@/pages/create-listing';
+import ItemDetail from '@/pages/item-detail';
+import Favorites from '@/pages/favorites';
 
 // Create Query Client
 const queryClient = new QueryClient({
@@ -34,13 +38,20 @@ function App() {
               <Route path="/" component={Home} />
               <Route path="/login" component={Login} />
               <Route path="/register" component={Register} />
+              <Route path="/browse" component={Browse} />
+              <Route path="/items/:id" component={ItemDetail} />
               
-              {/* Protected routes - will be added in next session */}
-              {/* <Route path="/sell">
+              {/* Protected routes */}
+              <Route path="/sell">
                 <ProtectedRoute>
                   <CreateListing />
                 </ProtectedRoute>
-              </Route> */}
+              </Route>
+              <Route path="/favorites">
+                <ProtectedRoute>
+                  <Favorites />
+                </ProtectedRoute>
+              </Route>
             </Switch>
           </main>
           <Footer />

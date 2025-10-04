@@ -22,7 +22,7 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+            <Link href="/browse" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
               Browse
             </Link>
             {isAuthenticated && (
@@ -91,7 +91,7 @@ export default function Header() {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-gray-200 py-4">
             <nav className="flex flex-col gap-2">
-              <Link href="/" className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
+              <Link href="/browse" className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
                 Browse
               </Link>
               {isAuthenticated ? (

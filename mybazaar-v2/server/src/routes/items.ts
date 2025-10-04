@@ -4,6 +4,7 @@ import { db, items, users, categories } from '../db';
 import { eq, and, desc, asc, gte, lte, ilike, or, sql } from 'drizzle-orm';
 import { requireAuth } from '../middleware/auth';
 import { validate } from '../middleware/validation';
+import { upload, processImages } from '../middleware/upload';
 
 const router = Router();
 
@@ -195,10 +196,14 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST /api/items - Create new item (will add image upload later)
-router.post('/', requireAuth, async (req, res) => {
+// POST /api/items - Create new item with image upload
+router.post('/', requireAuth, upload.array('images', 5), async (req, res) => {
   try {
-    const validatedData = createItemSchema.parse(req.body);
+    const validatedData = createItemSchema.parse({
+      ...req.body,
+      price: parseFloat(req.body.price),
+      discountPercentage: req.body.discountPercentage ? parseFloat(req.body.discountPercentage) : undefined,
+    });
 
     if (!req.session.userId) {
       return res.status(401).json({
@@ -207,15 +212,21 @@ router.post('/', requireAuth, async (req, res) => {
       });
     }
 
-    // For now, use placeholder images - will add Multer in next update
-    const placeholderImages = ['https://via.placeholder.com/400x400?text=Placeholder'];
+    // Process uploaded images
+    let imageUrls: string[] = [];
+    if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+      imageUrls = await processImages(req.files);
+    } else {
+      // Use placeholder if no images uploaded
+      imageUrls = ['https://via.placeholder.com/400x400?text=No+Image'];
+    }
 
     const [newItem] = await db
       .insert(items)
       .values({
         ...validatedData,
         sellerId: req.session.userId,
-        images: placeholderImages,
+        images: imageUrls,
       })
       .returning();
 
@@ -242,8 +253,8 @@ router.post('/', requireAuth, async (req, res) => {
   }
 });
 
-// PUT /api/items/:id - Update item
-router.put('/:id', requireAuth, async (req, res) => {
+// PUT /api/items/:id - Update item with optional image upload
+router.put('/:id', requireAuth, upload.array('images', 5), async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -268,14 +279,22 @@ router.put('/:id', requireAuth, async (req, res) => {
       });
     }
 
-    const validatedData = createItemSchema.partial().parse(req.body);
+    const validatedData = createItemSchema.partial().parse({
+      ...req.body,
+      price: req.body.price ? parseFloat(req.body.price) : undefined,
+      discountPercentage: req.body.discountPercentage ? parseFloat(req.body.discountPercentage) : undefined,
+    });
+
+    // Process new images if uploaded
+    let updateData: any = { ...validatedData, updatedAt: new Date() };
+    if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+      const imageUrls = await processImages(req.files);
+      updateData.images = imageUrls;
+    }
 
     const [updatedItem] = await db
       .update(items)
-      .set({
-        ...validatedData,
-        updatedAt: new Date(),
-      })
+      .set(updateData)
       .where(eq(items.id, id))
       .returning();
 
