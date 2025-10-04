@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 import { authenticateRequest } from '@/lib/auth';
 
 // GET /api/favorites - Get user's favorites
 export async function GET(request: NextRequest) {
+  const supabaseAdmin = getSupabaseAdmin();
   try {
     const user = await authenticateRequest(request);
     if (!user) {
@@ -76,6 +77,7 @@ export async function GET(request: NextRequest) {
 
 // POST /api/favorites - Add item to favorites
 export async function POST(request: NextRequest) {
+  const supabaseAdmin = getSupabaseAdmin();
   try {
     const user = await authenticateRequest(request);
     if (!user) {
@@ -176,6 +178,7 @@ export async function POST(request: NextRequest) {
 
 // DELETE /api/favorites - Remove item from favorites
 export async function DELETE(request: NextRequest) {
+  const supabaseAdmin = getSupabaseAdmin();
   try {
     const user = await authenticateRequest(request);
     if (!user) {

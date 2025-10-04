@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 import { authenticateRequest } from '@/lib/auth';
 
 // GET /api/favorites/check/[itemId] - Check if item is favorited

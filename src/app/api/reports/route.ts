@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 import { authenticateRequest } from '@/lib/auth';
 import { issueWarning } from '@/lib/content-moderation';
 import { REPORT_TYPES } from '@/lib/types';
 
 // GET /api/reports - Get user's reports
 export async function GET(request: NextRequest) {
+  const supabaseAdmin = getSupabaseAdmin();
   try {
     const user = await authenticateRequest(request);
     if (!user) {
@@ -66,6 +67,7 @@ export async function GET(request: NextRequest) {
 
 // POST /api/reports - Submit a new report
 export async function POST(request: NextRequest) {
+  const supabaseAdmin = getSupabaseAdmin();
   try {
     const user = await authenticateRequest(request);
     if (!user) {

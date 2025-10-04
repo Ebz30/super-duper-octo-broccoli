@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 import { authenticateRequest } from '@/lib/auth';
 import { validateListingContent } from '@/lib/content-moderation';
 import { CATEGORIES } from '@/lib/types';
 
 // GET /api/items - Get items with filtering and pagination
 export async function GET(request: NextRequest) {
+  const supabaseAdmin = getSupabaseAdmin();
   try {
     const { searchParams } = new URL(request.url);
     
@@ -113,6 +114,7 @@ export async function GET(request: NextRequest) {
 
 // POST /api/items - Create new item
 export async function POST(request: NextRequest) {
+  const supabaseAdmin = getSupabaseAdmin();
   try {
     const user = await authenticateRequest(request);
     if (!user) {

@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { supabase, supabaseAdmin } from './supabase';
+import { supabase, getSupabaseAdmin } from './supabase';
 import { User, Session } from './types';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -63,6 +63,8 @@ export async function registerUser(
   phone?: string
 ): Promise<AuthResult> {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
+
     // Validate password
     const passwordValidation = validatePassword(password);
     if (!passwordValidation.valid) {
@@ -74,7 +76,7 @@ export async function registerUser(
       .from('users')
       .select('id')
       .eq('email', email.toLowerCase())
-      .single();
+      .maybeSingle();
 
     if (existingUser) {
       return { success: false, error: 'User with this email already exists' };
@@ -136,6 +138,8 @@ export async function loginUser(
   rememberMe: boolean = false
 ): Promise<AuthResult> {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
+
     // Get user with password hash
     const { data: user, error } = await supabaseAdmin
       .from('users')
@@ -187,6 +191,8 @@ export async function loginUser(
 // Get user by token
 export async function getUserByToken(token: string): Promise<User | null> {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
+
     // Verify token
     const { userId, error } = verifyToken(token);
     if (error || !userId) {
@@ -230,6 +236,8 @@ export async function getUserByToken(token: string): Promise<User | null> {
 // Logout user
 export async function logoutUser(token: string): Promise<boolean> {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
+
     const { error } = await supabaseAdmin
       .from('sessions')
       .delete()
@@ -245,6 +253,8 @@ export async function logoutUser(token: string): Promise<boolean> {
 // Clean up expired sessions
 export async function cleanupExpiredSessions(): Promise<void> {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
+
     await supabaseAdmin
       .from('sessions')
       .delete()

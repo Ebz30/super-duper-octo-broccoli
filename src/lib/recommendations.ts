@@ -1,11 +1,13 @@
 // AI-powered recommendation engine for MyBazaar
 
-import { supabaseAdmin } from './supabase';
+import { getSupabaseAdmin } from './supabase';
 import { UserPreferences, RecommendationItem } from './types';
 
 // Calculate user preferences based on activity
 export async function calculateUserPreferences(userId: string): Promise<UserPreferences> {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
+
     // Get last 100 user activities
     const { data: activities } = await supabaseAdmin
       .from('user_activities')
@@ -85,10 +87,11 @@ export async function calculateUserPreferences(userId: string): Promise<UserPref
 
 // Generate recommendations for a user
 export async function generateRecommendations(
-  userId: string, 
+  userId: string,
   limit: number = 12
 ): Promise<RecommendationItem[]> {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
     const preferences = await calculateUserPreferences(userId);
 
     // Get user's favorites and viewed items to exclude
@@ -218,6 +221,8 @@ export async function trackActivity(
   }
 ): Promise<void> {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
+
     await supabaseAdmin
       .from('user_activities')
       .insert({
@@ -238,6 +243,7 @@ export async function trackActivity(
 // Get trending items (most viewed in last 7 days)
 export async function getTrendingItems(limit: number = 8): Promise<any[]> {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -268,6 +274,8 @@ export async function getTrendingItems(limit: number = 8): Promise<any[]> {
 // Get popular categories (most items in each category)
 export async function getPopularCategories(limit: number = 6): Promise<any[]> {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
+
     const { data: categories, error } = await supabaseAdmin
       .from('categories')
       .select(`

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 import { authenticateRequest } from '@/lib/auth';
 
 // GET /api/conversations - Get user's conversations
 export async function GET(request: NextRequest) {
+  const supabaseAdmin = getSupabaseAdmin();
   try {
     const user = await authenticateRequest(request);
     if (!user) {
@@ -88,6 +89,7 @@ export async function GET(request: NextRequest) {
 
 // POST /api/conversations - Create new conversation
 export async function POST(request: NextRequest) {
+  const supabaseAdmin = getSupabaseAdmin();
   try {
     const user = await authenticateRequest(request);
     if (!user) {
