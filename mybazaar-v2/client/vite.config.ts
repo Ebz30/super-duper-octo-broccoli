@@ -4,7 +4,13 @@ import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react({
+      // Disable React Fast Refresh overlay
+      fastRefresh: true,
+    }),
+  ],
+  clearScreen: false,
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
