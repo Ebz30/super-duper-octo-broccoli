@@ -15,6 +15,9 @@ import Browse from '@/pages/browse';
 import CreateListing from '@/pages/create-listing';
 import ItemDetail from '@/pages/item-detail';
 import Favorites from '@/pages/favorites';
+import MyListings from '@/pages/my-listings';
+import Profile from '@/pages/profile';
+import EditListing from '@/pages/edit-listing';
 
 // Create Query Client
 const queryClient = new QueryClient({
@@ -50,6 +53,21 @@ function App() {
               <Route path="/favorites">
                 <ProtectedRoute>
                   <Favorites />
+                </ProtectedRoute>
+              </Route>
+              <Route path="/my-listings">
+                <ProtectedRoute>
+                  <MyListings />
+                </ProtectedRoute>
+              </Route>
+              <Route path="/profile">
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              </Route>
+              <Route path="/items/:id/edit">
+                <ProtectedRoute>
+                  <EditListing />
                 </ProtectedRoute>
               </Route>
             </Switch>
