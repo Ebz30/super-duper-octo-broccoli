@@ -22,7 +22,7 @@ import {
 import { Item } from '@/lib/types';
 import toast from 'react-hot-toast';
 
-export default function ItemDetailPage({ params }: { params: { id: string } }) {
+export default function ItemDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { user } = useAuth();
   const router = useRouter();
   const [item, setItem] = useState<Item | null>(null);
@@ -31,10 +31,17 @@ export default function ItemDetailPage({ params }: { params: { id: string } }) {
   const [isFavorited, setIsFavorited] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [itemId, setItemId] = useState<string | null>(null);
 
   useEffect(() => {
-    loadItem();
-  }, [params.id]);
+    params.then(({ id }) => setItemId(id));
+  }, [params]);
+
+  useEffect(() => {
+    if (itemId) {
+      loadItem();
+    }
+  }, [itemId]);
 
   useEffect(() => {
     if (user && item) {
@@ -43,9 +50,11 @@ export default function ItemDetailPage({ params }: { params: { id: string } }) {
   }, [user, item]);
 
   const loadItem = async () => {
+    if (!itemId) return;
+
     setLoading(true);
     try {
-      const response = await fetch(`/api/items/${params.id}`, {
+      const response = await fetch(`/api/items/${itemId}`, {
         credentials: 'include',
       });
       const data = await response.json();
