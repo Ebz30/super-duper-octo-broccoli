@@ -80,19 +80,22 @@ export const apiService = {
       api.get<{ success: boolean; isFavorited: boolean }>(`/api/favorites/check/${itemId}`),
   },
 
-  // Conversations (TODO)
+  // Conversations
   conversations: {
     getAll: () => 
-      api.get<{ success: boolean; conversations: Conversation[] }>('/api/conversations'),
+      api.get<{ success: boolean; conversations: any[] }>('/api/conversations'),
     
     create: (itemId: string, sellerId: string) => 
-      api.post<{ success: boolean; conversation: Conversation }>('/api/conversations', { 
+      api.post<{ success: boolean; conversation: any }>('/api/conversations', { 
         itemId, 
         sellerId 
       }),
     
     getMessages: (id: string, params?: any) => 
-      api.get<PaginatedResponse<Message>>(`/api/conversations/${id}/messages`, { params }),
+      api.get<{ success: boolean; messages: Message[]; pagination: any }>(`/api/conversations/${id}/messages`, { params }),
+    
+    sendMessage: (id: string, data: { content: string }) =>
+      api.post<{ success: boolean; message: Message }>(`/api/conversations/${id}/messages`, data),
   },
 };
 

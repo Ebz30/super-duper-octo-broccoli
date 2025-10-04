@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, Switch } from 'wouter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/contexts/auth-context';
+import { WebSocketProvider } from '@/contexts/websocket-context';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
@@ -18,6 +19,7 @@ import Favorites from '@/pages/favorites';
 import MyListings from '@/pages/my-listings';
 import Profile from '@/pages/profile';
 import EditListing from '@/pages/edit-listing';
+import Messages from '@/pages/messages';
 
 // Create Query Client
 const queryClient = new QueryClient({
@@ -34,9 +36,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <main className="flex-1 pt-16">
+        <WebSocketProvider>
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-1 pt-16">
             <Switch>
               <Route path="/" component={Home} />
               <Route path="/login" component={Login} />
@@ -70,11 +73,17 @@ function App() {
                   <EditListing />
                 </ProtectedRoute>
               </Route>
+              <Route path="/messages">
+                <ProtectedRoute>
+                  <Messages />
+                </ProtectedRoute>
+              </Route>
             </Switch>
           </main>
           <Footer />
         </div>
         <Toaster />
+        </WebSocketProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

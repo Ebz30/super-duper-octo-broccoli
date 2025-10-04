@@ -44,7 +44,7 @@ export default function ItemDetail() {
     },
   });
 
-  const handleContactSeller = () => {
+  const handleContactSeller = async () => {
     if (!isAuthenticated) {
       toast({
         title: 'Login required',
@@ -62,8 +62,20 @@ export default function ItemDetail() {
       return;
     }
 
-    // Navigate to messages
-    navigate('/messages');
+    try {
+      // Create or get conversation
+      await apiService.conversations.create(data!.id, data!.sellerId);
+      
+      // Navigate to messages
+      navigate('/messages');
+    } catch (error) {
+      console.error('Failed to start conversation:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Could not start conversation',
+      });
+    }
   };
 
   const handleShare = async () => {

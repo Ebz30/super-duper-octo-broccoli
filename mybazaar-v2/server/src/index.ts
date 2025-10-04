@@ -6,6 +6,7 @@ import postgres from 'postgres';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createServer } from 'http';
 
 // Load environment variables
 dotenv.config();
@@ -15,6 +16,10 @@ import authRoutes from './routes/auth';
 import itemsRoutes from './routes/items';
 import categoriesRoutes from './routes/categories';
 import favoritesRoutes from './routes/favorites';
+import conversationsRoutes from './routes/conversations';
+
+// Import WebSocket
+import { MessagingWebSocket } from './websocket/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -64,6 +69,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/items', itemsRoutes);
 app.use('/api/categories', categoriesRoutes);
 app.use('/api/favorites', favoritesRoutes);
+app.use('/api/conversations', conversationsRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -113,11 +119,18 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
+// Create HTTP server
+const httpServer = createServer(app);
+
+// Initialize WebSocket server
+const messagingWS = new MessagingWebSocket(httpServer);
+
 // Start server
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`🚀 MyBazaar API v2.0 running on port ${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
+  console.log(`💬 WebSocket server running on ws://localhost:${PORT}/ws`);
 });
 
 export default app;
